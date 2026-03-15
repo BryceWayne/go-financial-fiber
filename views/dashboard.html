@@ -1,0 +1,114 @@
+<form hx-post="/calculate" hx-trigger="input delay:300ms from:input, change from:select" hx-target="#dashboard-grid" hx-indicator=".htmx-indicator" id="dashboard-form" style="display: contents;">
+    <div class="glass-card">
+        <h2 class="section-title">Income / Top Line</h2>
+        
+        <div class="sub-title">Pre-Tax Income (Annual)</div>
+        <div class="space-y">
+            <div class="input-row"><label>Salary</label><input type="number" name="salary" value="{{ .Salary }}" class="input-field"></div>
+            <div class="input-row"><label>Bonus</label><input type="number" name="bonus" value="{{ .Bonus }}" class="input-field"></div>
+            <div class="input-row"><label>Rental Property</label><input type="number" name="rental_property" value="{{ .RentalProperty }}" class="input-field"></div>
+            <div class="input-row"><label>Interest <span class="text-xs">(HYSA)</span></label><input type="number" name="interest_income" value="{{ .InterestIncome }}" class="input-field"></div>
+        </div>
+        <div class="total-bar"><span>Total Pre-Tax</span><span>{{ formatCurrency .TotalPreTaxAnnual }}</span></div>
+
+        <div class="sub-title">Location Rules (Tax Calculations)</div>
+        <div class="space-y">
+            <div class="input-row">
+                <label>State</label>
+                <select name="state" class="input-field" style="width: auto;">
+                    <option value="NY" {{if eq .State "NY"}}selected{{end}}>New York (NY)</option>
+                    <option value="CA" {{if eq .State "CA"}}selected{{end}}>California (CA)</option>
+                    <option value="TX" {{if eq .State "TX"}}selected{{end}}>Texas (TX)</option>
+                    <option value="FL" {{if eq .State "FL"}}selected{{end}}>Florida (FL)</option>
+                    <option value="IL" {{if eq .State "IL"}}selected{{end}}>Illinois (IL)</option>
+                    <option value="WA" {{if eq .State "WA"}}selected{{end}}>Washington (WA)</option>
+                    <option value="Other" {{if eq .State "Other"}}selected{{end}}>Other (5% Est.)</option>
+                </select>
+            </div>
+            <div class="input-row">
+                <label>City</label>
+                <select name="city" class="input-field" style="width: auto;">
+                    <option value="NYC" {{if eq .City "NYC"}}selected{{end}}>New York City</option>
+                    <option value="SF" {{if eq .City "SF"}}selected{{end}}>San Francisco</option>
+                    <option value="None" {{if eq .City "None"}}selected{{end}}>None</option>
+                    <option value="Other" {{if eq .City "Other"}}selected{{end}}>Other (1% Est.)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="sub-title">Post-Tax Monthly Overview</div>
+        <div class="space-y">
+            <div class="input-row"><label>Pre-Tax Monthly</label><span class="calculated-value">{{ formatCurrency .PreTaxMonthly }}</span></div>
+            <div class="input-row"><label>Monthly 401k Contrib.</label><input type="number" name="monthly_401k" value="{{ .Monthly401kContribution }}" class="input-field"></div>
+            <div class="input-row"><label>Monthly Taxable</label><span class="calculated-value">{{ formatCurrency .MonthlyTaxable }}</span></div>
+            <div class="input-row"><label>Fed Taxes</label><span class="calculated-value text-muted">{{ formatCurrency .MonthlyFedTax }}</span></div>
+            <div class="input-row"><label>State Taxes</label><span class="calculated-value text-muted">{{ formatCurrency .MonthlyStateTax }}</span></div>
+            <div class="input-row"><label>City Taxes</label><span class="calculated-value text-muted">{{ formatCurrency .MonthlyCityTax }}</span></div>
+        </div>
+        <div class="total-bar secondary"><span>Post-Tax Monthly Take Home</span><span>{{ formatCurrency .PostTaxTakeHome }}</span></div>
+
+        <div class="sub-title">Bonus Breakdown</div>
+        <div class="space-y">
+            <div class="input-row"><label>Taxable Amount</label><span class="calculated-value">{{ formatCurrency .BonusTaxable }}</span></div>
+            <div class="input-row"><label>Tax Rate</label><span class="calculated-value">45%</span></div>
+            <div class="input-row"><label>Taxes</label><span class="calculated-value text-muted">{{ formatCurrency .BonusTaxes }}</span></div>
+        </div>
+        <div class="total-bar secondary"><span>Bonus Take Home</span><span>{{ formatCurrency .TotalBonusTakeHome }}</span></div>
+
+        <div class="total-bar highlight" style="margin-top: 1rem;"><span>Total Annual Take Home</span><span>{{ formatCurrency .TotalAnnualTakeHome }}</span></div>
+        <div class="total-bar highlight" style="margin-top: 0.5rem;"><span>Total Monthly Take Home</span><span>{{ formatCurrency .TotalMonthlyTakeHome }}</span></div>
+    </div>
+
+    <div class="glass-card" style="--accent-primary: var(--accent-tertiary); --accent-glow: rgba(244, 63, 94, 0.4);">
+        <h2 class="section-title">Monthly Expenses</h2>
+        
+        <div class="sub-title">Responsible Basics</div>
+        <div class="space-y">
+            <div class="input-row"><label>Mortgage</label><input type="number" name="mortgage" value="{{ .Mortgage }}" class="input-field"></div>
+            <div class="input-row"><label>Groceries</label><input type="number" name="groceries" value="{{ .Groceries }}" class="input-field"></div>
+            <div class="input-row"><label>Utilities</label><input type="number" name="utilities" value="{{ .Utilities }}" class="input-field"></div>
+            <div class="input-row"><label>Student Loans</label><input type="number" name="student_loans" value="{{ .StudentLoans }}" class="input-field"></div>
+            <div class="input-row"><label>Credit Card Debt</label><input type="number" name="credit_card_debt" value="{{ .CreditCardDebt }}" class="input-field"></div>
+            <div class="input-row"><label>Investments (Brokerage/IRA)</label><input type="number" name="investments" value="{{ .Investments }}" class="input-field"></div>
+            <div class="input-row"><label>Laundry</label><input type="number" name="laundry" value="{{ .Laundry }}" class="input-field"></div>
+            <div class="input-row"><label>Car <span class="text-xs">(Pay/Gas/Maint)</span></label><input type="number" name="car" value="{{ .Car }}" class="input-field"></div>
+            <div class="input-row"><label>Public Transport</label><input type="number" name="public_transport" value="{{ .PublicTransport }}" class="input-field"></div>
+        </div>
+        <div class="total-bar tertiary"><span>Total Core</span><span>{{ formatCurrency .TotalResponsible }}</span></div>
+
+        <div class="sub-title" style="margin-top: 0.75rem;">Discretionary Spending</div>
+        <div class="space-y">
+            <div class="input-row"><label>Dining / Takeout</label><input type="number" name="eating_out" value="{{ .EatingOut }}" class="input-field"></div>
+            <div class="input-row"><label>Travel</label><input type="number" name="travel" value="{{ .Travel }}" class="input-field"></div>
+            <div class="input-row"><label>Fitness / Gym</label><input type="number" name="gym" value="{{ .Gym }}" class="input-field"></div>
+            <div class="input-row"><label>Grooming / Hair</label><input type="number" name="hair" value="{{ .Hair }}" class="input-field"></div>
+            <div class="input-row"><label>Skincare</label><input type="number" name="skincare" value="{{ .Skincare }}" class="input-field"></div>
+            <div class="input-row"><label>Wardrobe</label><input type="number" name="clothes" value="{{ .Clothes }}" class="input-field"></div>
+            <div class="input-row"><label>Coffee Shops</label><input type="number" name="coffee" value="{{ .Coffee }}" class="input-field"></div>
+            <div class="input-row"><label>Subscriptions <span class="text-xs">(Media/Apps)</span></label><input type="number" name="other_subs" value="{{ .OtherSubs }}" class="input-field"></div>
+        </div>
+        <div class="total-bar tertiary"><span>Total Discretionary</span><span>{{ formatCurrency .TotalBonusSpending }}</span></div>
+    </div>
+
+    <div class="glass-card" style="--accent-primary: var(--accent-secondary); --accent-glow: rgba(192, 132, 252, 0.4);">
+        <h2 class="section-title">Leisure & Savings</h2>
+        
+        <div class="sub-title">Irresponsible / Fun</div>
+        <div class="space-y">
+            <div class="input-row"><label>Fun / Random</label><input type="number" name="fun_random" value="{{ .FunRandom }}" class="input-field"></div>
+            <div class="input-row"><label>Alcohol / Bars</label><input type="number" name="alcohol" value="{{ .Alcohol }}" class="input-field"></div>
+            <div class="input-row"><label>Rideshare / Ubers</label><input type="number" name="ubers" value="{{ .Ubers }}" class="input-field"></div>
+        </div>
+        <div class="total-bar secondary"><span>Total Irresponsible</span><span>{{ formatCurrency .TotalIrresponsible }}</span></div>
+
+        <div class="sub-title" style="margin-top: 0.75rem;">Asset Building</div>
+        <div class="space-y">
+            <div class="input-row"><label>401k Balance</label><input type="number" name="savings_401k" value="{{ .Savings401k }}" class="input-field"></div>
+            <div class="input-row"><label>Cash Savings</label><input type="number" name="cash" value="{{ .Cash }}" class="input-field"></div>
+            <div class="input-row"><label>Other Inv. <span class="text-xs">(Roth/Stocks)</span></label><input type="number" name="other_investments" value="{{ .OtherInvestments }}" class="input-field"></div>
+            <div class="input-row"><label>Brokerage</label><input type="number" name="brokerage" value="{{ .Brokerage }}" class="input-field"></div>
+            <div class="input-row"><label>Home Equity</label><input type="number" name="home_equity" value="{{ .HomeEquity }}" class="input-field"></div>
+        </div>
+        <div class="total-bar highlight"><span>Total Net Worth Tracked</span><span>{{ formatCurrency .TotalSavings }}</span></div>
+    </div>
+</form>
